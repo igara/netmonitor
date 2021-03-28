@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import Layout from '../components/Layout'
 
 const IndexPage = () => {
-  useEffect(() => {
+  React.useEffect(() => {
     // add a listener to 'message' channel
     global.ipcRenderer.addListener('message', (_event, args) => {
       alert(args)

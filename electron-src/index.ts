@@ -3,15 +3,17 @@ import { join } from 'path'
 import { format } from 'url'
 
 // Packages
-import { BrowserWindow, app, ipcMain, IpcMainEvent } from 'electron'
+import * as electron from 'electron'
 import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
+import psList from 'ps-list'
+import * as frida from 'frida'
 
 // Prepare the renderer once the app is ready
-app.on('ready', async () => {
+electron.app.on('ready', async () => {
   await prepareNext('./renderer')
 
-  const mainWindow = new BrowserWindow({
+  const mainWindow = new electron.BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -32,10 +34,17 @@ app.on('ready', async () => {
 })
 
 // Quit the app once all windows are closed
-app.on('window-all-closed', app.quit)
+electron.app.on('window-all-closed', electron.app.quit)
 
-// listen the channel `message` and resend the received message to the renderer process
-ipcMain.on('message', (event: IpcMainEvent, message: any) => {
-  console.log(message)
-  setTimeout(() => event.sender.send('message', 'hi from electron'), 500)
-})
+electron.ipcMain.on('StartNetworkAPIHook', async(event) => {
+  const processes = await psList()
+  processes.forEach(async p => {
+    if (p.name === 'chrome.exe') {
+      console.log(p)
+      const session = await frida.attach(p.pid)
+      console.log(session)
+    }
+  });
+
+  event.sender.send('StartNetworkAPIHook', 'aaaaa')
+});

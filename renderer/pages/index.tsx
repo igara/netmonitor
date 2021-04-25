@@ -4,20 +4,19 @@ import Layout from '../components/Layout'
 
 const IndexPage = () => {
   React.useEffect(() => {
-    // add a listener to 'message' channel
-    global.ipcRenderer.addListener('message', (_event, args) => {
-      alert(args)
+    global.ipcRenderer.addListener('StartNetworkAPIHook', (_event, message) => {
+      alert(message)
     })
   }, [])
 
-  const onSayHiClick = () => {
-    global.ipcRenderer.send('message', 'hi from next')
-  }
+  const onStartNetworkAPIHook = React.useCallback(() => { 
+    global.ipcRenderer.send('StartNetworkAPIHook')
+  }, [])
 
   return (
-    <Layout title="Home | Next.js + TypeScript + Electron Example">
-      <h1>Hello Next.js 👋</h1>
-      <button onClick={onSayHiClick}>Say hi to electron</button>
+    <Layout title="netmonitor">
+      <h1>netmonitor</h1>
+      <button onClick={onStartNetworkAPIHook}>Start</button>
       <p>
         <Link href="/about">
           <a>About</a>
